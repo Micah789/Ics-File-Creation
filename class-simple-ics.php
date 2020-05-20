@@ -16,7 +16,7 @@ class SimpleICS {
   private $title;
   private $description;
   private $start_date;
-	private $date_stamp;
+  private $date_stamp;
   private $location;
   private $url;
 
