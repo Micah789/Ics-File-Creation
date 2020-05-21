@@ -8,22 +8,24 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
  * 
  * @package SimpleICS
  * @author  Micah Kwaka
- * @since 0.3
+ * @since 0.5
  */
 class SimpleICS {
 
   // define properties
+  private $id;
   private $title;
   private $description;
   private $start_date;
-  private $date_stamp;
+	private $date_stamp;
   private $location;
   private $url;
 
   // constuctor
-  function __construct(int $post_id) {
+  function __construct($post_id = null) {
+    $this->id = $post_id ?? get_the_ID();
     $this->title = get_the_title($post_id);
-    $this->description = show_max_char_length(get_post_content($post_id), 75);
+    $this->description = show_max_char_length(get_post_content($post_id), 150);
     $this->location = get_field('location', $post_id);
     $this->start_date = get_field('event_date', $post_id);
     $this->url = get_permalink($post_id);
@@ -54,7 +56,7 @@ class SimpleICS {
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
       'BEGIN:VEVENT',
-      'UID:'.md5($this->title),
+      'UID:'. md5($this->title.''.$this->dateToCal($this->date_stamp)),
       'SUMMARY:' . addslashes($this->title),
       'DTSTAMP:' . $this->dateToCal($this->date_stamp)
     ];
@@ -80,9 +82,7 @@ class SimpleICS {
     $redirectLink = implode("\r\n", $url);
     $href = $this->buildHref($redirectLink);
 
-    if(!empty($href)) {
-      return $href;
-    }
+    return !empty($href) ? $href :  false;
   }
 
   /**
